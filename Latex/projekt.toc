@@ -1,0 +1,6 @@
+\babel@toc {ngerman}{}
+\contentsline {chapter}{\numberline {1}Einleitung}{1}% 
+\contentsline {chapter}{\numberline {2}Problemstellung}{2}% 
+\contentsline {chapter}{\numberline {3}Material und Methoden}{3}% 
+\contentsline {chapter}{\numberline {4}Evaluation}{4}% 
+\contentsline {chapter}{\numberline {5}Zusammenfassung}{5}% 
