@@ -1,5 +1,5 @@
 # Setzen des Working Directory
-setwd("C:/Users/Matthias/OneDrive/SV/Projekt")
+setwd("~/Documents/Master Data Science/Statistische Verfahren/Projekt/Statistische-Verfahren--Projekt-4.1-Buche/Aufgabenstellung")
 # Laden der Daten aus CSV
 buche.data = read.csv("buche.csv", sep=",")
 head(buche.data)
