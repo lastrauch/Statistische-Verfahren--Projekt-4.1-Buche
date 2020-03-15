@@ -4,7 +4,7 @@ setwd("~/Documents/Master Data Science/Statistische Verfahren/Projekt/Statistisc
 buche.data = read.csv("buche.csv", sep=",")
 head(buche.data)
 
-# Aufteilen des Datensatzes in Teildatensätze jedes einzelogen Autors
+# Aufteilen des Datensatzes in Teildatensaetze jedes einzelogen Autors
 buche.data.bartelink = subset(buche.data, buche.data[,1] == "Bartelink") ## Verkleinern des Datensatzes
 buche.data.heller = subset(buche.data, buche.data[,1] == "Heller")
 buche.data.joosten = subset(buche.data, buche.data[,1] == "Joosten")
@@ -54,7 +54,7 @@ m.bartelink = lm(log(biom)~1+ I(log(dbh))+I(log(age)^2)+I(log(height))+I(log(hei
 m.heller = lm(log(biom)~1+ I(log(dbh))+I(log(dbh)^2)+I(log(age)^2)+I(log(height)), data = buche.data.heller)
 m.joosten = lm(log(biom)~1+ I(log(dbh))+I(log(dbh)^2)+I(log(age))+I(log(height))+I(log(height)^2)+hsl+I(log(hsl))+I(log(hsl)^2), data = buche.data.joosten)
 
-# Berechnen der Parameter für die Modelle
+# Berechnen der Parameter fuer die Modelle
 summary(m.bartelink)
 summary(m.heller)
 summary(m.joosten)
