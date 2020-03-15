@@ -1,14 +1,5 @@
-# Als template wurde Aufgabe8.R benutzt
-# Dataset vs. Paper notations
-# dbh := D
-# age := A
-# height := H
-# hsl := HSL
-# biom := W
-# Muss noch begründen, wie wir auf die quadratischen Terme kommen
-
 # Setzen des Working Directory
-setwd("C:/Users/Matthias/OneDrive/SV/Projekt")
+# setwd("~/Documents/Master Data Science/Statistische Verfahren/Projekt/Statistische-Verfahren--Projekt-4.1-Buche/Aufgabenstellung")
 # Laden der Daten aus CSV
 buche.data = read.csv("buche.csv", sep=",")
 head(buche.data)
@@ -16,19 +7,7 @@ head(buche.data)
 set.seed(0)
 
 # Aufteilen des Datensatzes in Teildatensätze jedes einzelogen Autors
-buche.data.bartelink = subset(buche.data, buche.data[,1] == "Bartelink") ## Verkleinern des Datensatzes
-buche.data.heller = subset(buche.data, buche.data[,1] == "Heller")
 buche.data.joosten = subset(buche.data, buche.data[,1] == "Joosten")
-
-# Plots
-par(mfrow = c(2, 3))
-plot(log(buche.data$dbh), log(buche.data$biom),ylim = c(-5, 10))
-plot(log(buche.data$age), log(buche.data$biom))
-plot(log(buche.data$height), log(buche.data$biom))
-plot(log(buche.data$hsl), log(buche.data$biom))
-plot((buche.data$hsl), log(buche.data$biom))
-plot((buche.data$author), log(buche.data$biom))
-
 
 ## Best subset selection
 # 1. maximales Modell festlegen
@@ -39,50 +18,34 @@ plot((buche.data$author), log(buche.data$biom))
 ## leaps
 require("leaps")
 
-# bartelink
-buche.bss.bartelink = regsubsets(log(biom)~1+ I(log(dbh))+I(log(dbh)^2)+I(log(age))+I(log(age)^2)+I(log(height))+I(log(height)^2)+hsl+I(hsl^2)+I(log(hsl))+I(log(hsl)^2), data = buche.data.bartelink, nbest = 3) ## nbest = 3, jeweils die drei besten Modelle gleicher Parameterzahl
-summary(buche.bss.bartelink)
-
-summary(buche.bss.bartelink)$cp
-summary(buche.bss.bartelink)$which[11,] # Modell 11 liefert betragsmäßig besten CP-Wert (-0.08103549)
-
-# heller
-buche.bss.heller = regsubsets(log(biom)~1+ I(log(dbh))+I(log(dbh)^2)+I(log(age))+I(log(age)^2)+I(log(height))+I(log(height)^2)+hsl+I(hsl^2)+I(log(hsl))+I(log(hsl)^2), data = buche.data.heller, nbest = 3) ## nbest = 3, jeweils die drei besten Modelle gleicher Parameterzahl
-summary(buche.bss.heller)
-
-summary(buche.bss.heller)$cp
-summary(buche.bss.heller)$which[12,] # Modell 12 liefert betragsmäßig besten CP-Wert (-0.5130457)
-
 # joosten
 buche.bss.joosten = regsubsets(log(biom)~1+ I(log(dbh))+I(log(dbh)^2)+I(log(age))+I(log(age)^2)+I(log(height))+I(log(height)^2)+hsl+I(hsl^2)+I(log(hsl))+I(log(hsl)^2), data = buche.data.joosten, nbest = 3) ## nbest = 3, jeweils die drei besten Modelle gleicher Parameterzahl
-summary(buche.bss.joosten)
+# summary(buche.bss.joosten)
 
 summary(buche.bss.joosten)$cp
 summary(buche.bss.joosten)$which[22,] # Modell 22 liefert betragsmäßig besten CP-Wert (8.344969)
 
+m.joosten = lm(log(biom)~1+ I(log(dbh))+I(log(dbh)^2)+I(log(age))+I(log(height))+I(log(height)^2)+hsl+I(log(hsl))+I(log(hsl)^2), data = buche.data.joosten)
 
 ## Simulation
 # Genutzter Datensatz und Anzal der Outputs für Kreuzvalidierung
 buche.data.used = buche.data.joosten
-cross.length.out = 3082
 
 # Anzahl der Beobachtungen für den gewählten Datensatz
 numberObs = nrow(buche.data.used)
 
-## Kreuzalidierung
-index = rep(1:numberObs, length.out = cross.length.out)
-index = sample(1:numberObs, cross.length.out, replace=T)
-
-table(index)
-index = rep(1:numberObs, length.out=cross.length.out)
-# index = rep(1:numberObs, length.out=250) ## Verkleinerter Datensatz
-table(index)
-index = sample(index)
+cross.length.out = numberObs
 
 # Initialisierung
 SPSE1 =SPSE2 =SPSE3 =SPSE4 =SPSE5 =SPSE6 =SPSE7=SPSE8 =0
 
-for(i in 1:numberObs){
+## Kreuzalidierung
+index = rep(1:5, length.out = cross.length.out) # 80 % Trainingsdaten
+
+
+for(j in 1:100){
+  index = sample(index)
+  i = 1
   ## Zerlegung
   buche.test= buche.data.used[index==i,]
   buche.train= buche.data.used[index!=i,]
