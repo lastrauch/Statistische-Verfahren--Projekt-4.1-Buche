@@ -49,6 +49,9 @@ for(m in 2:5){
     ## Zerlegung
     buche.test= buche.data.used[index %in% i,]
     buche.train= buche.data.used[!(index %in% i),]
+    
+    ## Simulation
+    
   
     ## Parameterschaetzung
     m.joosten = lm(log(biom)~1+ I(log(dbh))+I(log(dbh)^2)+I(log(age))+I(log(height))+I(log(height)^2)+hsl+I(log(hsl))+I(log(hsl)^2), data = buche.train)
@@ -56,6 +59,7 @@ for(m in 2:5){
     ## Prognosefehler
     SPSE[m-1] = SPSE[m-1] + sum((log(buche.test$biom)-predict(m.joosten, newdata=buche.test))^2)
   }
+  SPSE[m-1] = SPSE[m-1]/100
 }
 
 ## Schätzung auf Grund von RSS
