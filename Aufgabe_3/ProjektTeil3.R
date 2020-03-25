@@ -3,17 +3,17 @@
 # Laden der Daten aus CSV
 buche.data = read.csv("buche.csv", sep=",")
 head(buche.data)
-# Seed f¸r den Random Number Generator
+# Seed f√ºr den Random Number Generator
 set.seed(0)
 
-# Aufteilen des Datensatzes in Teildatens‰tze jedes einzelogen Autors
+# Aufteilen des Datensatzes in Teildatens√§tze jedes einzelogen Autors
 buche.data.joosten = subset(buche.data, buche.data[,1] == "Joosten")
 
 ## Best subset selection
 # 1. maximales Modell festlegen
 # 2. alle Teilmodelle sind Kandidatenmodelle
 # 3. Entscheidung basierend auf Mallow's Cp
-# 4. Sch‰tzer f¸r SPSE = Cp * sigma2.max + n* sigma2.max
+# 4. Sch√§tzer f√ºr SPSE = Cp * sigma2.max + n* sigma2.max
 
 ## leaps
 require("leaps")
@@ -23,42 +23,65 @@ buche.bss.joosten = regsubsets(log(biom)~1+ I(log(dbh))+I(log(dbh)^2)+I(log(age)
 # summary(buche.bss.joosten)
 
 summary(buche.bss.joosten)$cp
-summary(buche.bss.joosten)$which[22,] # Modell 22 liefert betragsm‰ﬂig besten CP-Wert (8.344969)
+summary(buche.bss.joosten)$which[22,] # Modell 22 liefert betragsm√§√üig besten CP-Wert (8.344969)
 
 m.joosten = lm(log(biom)~1+ I(log(dbh))+I(log(dbh)^2)+I(log(age))+I(log(height))+I(log(height)^2)+hsl+I(log(hsl))+I(log(hsl)^2), data = buche.data.joosten)
 
 ## Simulation
-# Genutzter Datensatz und Anzal der Outputs f¸r Kreuzvalidierung
+# Genutzter Datensatz und Anzal der Outputs f√ºr Kreuzvalidierung
 buche.data.used = buche.data.joosten
 
-# Anzahl der Beobachtungen f¸r den gew‰hlten Datensatz
+# Anzahl der Beobachtungen f√ºr den gew√§hlten Datensatz
 numberObs = nrow(buche.data.used)
 
 cross.length.out = numberObs
 
 # Initialisierung
-SPSE = c(1:4)
+SPSE = rep(0,4)
+SPSE.theo = rep(0,4)
+n = 1000000
+reps = 100
 
 ## Kreuzalidierung
 index = rep(1:10, length.out = cross.length.out)
 
-for(m in 2:5){
-  for(j in 1:100){
+for(m in 1:4){
+  for(j in 1:reps){
     index = sample(index)
-    i = c(1:m)
+    i = c(1:(m+1))
     ## Zerlegung
     buche.test= buche.data.used[index %in% i,]
-    buche.train= buche.data.used[!(index %in% i),]
-  
+    buche.design= buche.data.used[!(index %in% i),]
+    
+    ## Simulation
+    biom.mean = mean(buche.design$biom)
+    biom.sd = sd(buche.design$biom)
+    biom.sim = rnorm(n, mean = biom.mean, sd = biom.sd)
+    
+    # Muessen die simulierten Biomassedaten nicht zu den Parametern passen? Wie wird das erreicht?
+    # Wie bekommen wir Simulierte Parameter zu den simulierten Biomassedaten?
+    # In einer Loesung von vorherigen Studenten wurden einfach zuf√§llig Daten aus der Designmatrix mit den simulierten Biomassedaten verkn√ºpft. Wieso ist das zielf√ºhrend?
+    
     ## Parameterschaetzung
-    m.joosten = lm(log(biom)~1+ I(log(dbh))+I(log(dbh)^2)+I(log(age))+I(log(height))+I(log(height)^2)+hsl+I(log(hsl))+I(log(hsl)^2), data = buche.train)
+    #TODO: verwenden der Simulationsdaten fuer die Berechunung der Parameter
+    # m.joosten = lm(log(biom)~1+ I(log(dbh))+I(log(dbh)^2)+I(log(age))+I(log(height))+I(log(height)^2)+hsl+I(log(hsl))+I(log(hsl)^2), data = buche.design)
    
     ## Prognosefehler
-    SPSE[m-1] = SPSE[m-1] + sum((log(buche.test$biom)-predict(m.joosten, newdata=buche.test))^2)
+    
+    ## Erwarteter SPSE
+    SPSE[m] = SPSE[m] + sum((log(buche.test$biom)-predict(m.joosten, newdata=buche.test))^2)
+    
+    ## Theoretischer SPSE
+    # SPSE = n*sd^2 + (bias ist NULL, da Zufallszahlen Erwartungstreu) + |M|*sd^2
+    numberObs.sim = nrow(buche.design)  # Anzahl der Beobachtungen f√ºr den gew√§hlten Datensatz
+    SPSE.theo[m] = SPSE.theo[m] + n*biom.sd^2 + numberObs.sim*biom.sd^2 
+    
   }
+  SPSE[m] = SPSE[m]/reps
+  SPSE.theo[m] = SPSE.theo[m]/reps
 }
 
-## Sch‰tzung auf Grund von RSS
+## Sch√§tzung auf Grund von RSS
 m.joosten = lm(log(biom)~1+ I(log(dbh))+I(log(dbh)^2)+I(log(age))+I(log(height))+I(log(height)^2)+hsl+I(log(hsl))+I(log(hsl)^2), data = buche.test)
 
 RSS = sum(residuals(m.joosten)^2)
@@ -75,7 +98,7 @@ c(SPSE1 ,SPSE2 ,SPSE3 ,SPSE4)
 # 1. maximales Modell festlegen
 # 2. alle Teilmodelle sind Kandidatenmodelle
 # 3. Entscheidung basierend auf Mallow's Cp
-# 4. Sch‰tzer f¸r SPSE = Cp * sigma2.max + n* sigma2.max
+# 4. Sch√§tzer f√ºr SPSE = Cp * sigma2.max + n* sigma2.max
 
 ## leaps
 require("leaps")
