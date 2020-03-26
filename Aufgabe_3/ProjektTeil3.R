@@ -37,29 +37,48 @@ numberObs = nrow(buche.data.used)
 cross.length.out = numberObs
 
 # Initialisierung
-SPSE = c(1:4)
+SPSE = rep(0,4)
+SPSE.theo = rep(0,4)
+n = 1000000
+reps = 100
 
 ## Kreuzalidierung
 index = rep(1:10, length.out = cross.length.out)
 
-for(m in 2:5){
-  for(j in 1:100){
+for(m in 1:4){
+  for(j in 1:reps){
     index = sample(index)
-    i = c(1:m)
+    i = c(1:(m+1))
     ## Zerlegung
     buche.test= buche.data.used[index %in% i,]
-    buche.train= buche.data.used[!(index %in% i),]
+    buche.design= buche.data.used[!(index %in% i),]
     
     ## Simulation
+    biom.mean = mean(buche.design$biom)
+    biom.sd = sd(buche.design$biom)
+    biom.sim = rnorm(n, mean = biom.mean, sd = biom.sd)
     
-  
+    # Muessen die simulierten Biomassedaten nicht zu den Parametern passen? Wie wird das erreicht?
+    # Wie bekommen wir Simulierte Parameter zu den simulierten Biomassedaten?
+    # In einer Loesung von vorherigen Studenten wurden einfach zufällig Daten aus der Designmatrix mit den simulierten Biomassedaten verknüpft. Wieso ist das zielführend?
+    
     ## Parameterschaetzung
-    m.joosten = lm(log(biom)~1+ I(log(dbh))+I(log(dbh)^2)+I(log(age))+I(log(height))+I(log(height)^2)+hsl+I(log(hsl))+I(log(hsl)^2), data = buche.train)
+    #TODO: verwenden der Simulationsdaten fuer die Berechunung der Parameter
+    # m.joosten = lm(log(biom)~1+ I(log(dbh))+I(log(dbh)^2)+I(log(age))+I(log(height))+I(log(height)^2)+hsl+I(log(hsl))+I(log(hsl)^2), data = buche.design)
    
     ## Prognosefehler
-    SPSE[m-1] = SPSE[m-1] + sum((log(buche.test$biom)-predict(m.joosten, newdata=buche.test))^2)
+    
+    ## Erwarteter SPSE
+    SPSE[m] = SPSE[m] + sum((log(buche.test$biom)-predict(m.joosten, newdata=buche.test))^2)
+    
+    ## Theoretischer SPSE
+    # SPSE = n*sd^2 + (bias ist NULL, da Zufallszahlen Erwartungstreu) + |M|*sd^2
+    numberObs.sim = nrow(buche.design)  # Anzahl der Beobachtungen für den gewählten Datensatz
+    SPSE.theo[m] = SPSE.theo[m] + n*biom.sd^2 + numberObs.sim*biom.sd^2 
+    
   }
-  SPSE[m-1] = SPSE[m-1]/100
+  SPSE[m] = SPSE[m]/reps
+  SPSE.theo[m] = SPSE.theo[m]/reps
 }
 
 ## Schätzung auf Grund von RSS
