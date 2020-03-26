@@ -45,6 +45,19 @@ reps = 100
 ## Kreuzalidierung
 index = rep(1:10, length.out = cross.length.out)
 
+par(mfrow = c(2,4))
+hist(log(buche.data.joosten$dbh))
+hist(log(buche.data.joosten$age))
+hist(buche.data.joosten$hsl)
+hist(log(buche.data.joosten$height))
+hist(log(buche.data.joosten$dbh) + log(buche.data.joosten$dbh)^2)
+hist(log(buche.data.joosten$age))
+hist(log(buche.data.joosten$hsl) + log(buche.data.joosten$hsl)^2 + buche.data.joosten$hsl)
+hist(log(buche.data.joosten$height) + log(buche.data.joosten$height)^2)
+
+
+
+
 for(m in 1:4){
   for(j in 1:reps){
     index = sample(index)
@@ -57,6 +70,9 @@ for(m in 1:4){
     biom.mean = mean(buche.design$biom)
     biom.sd = sd(buche.design$biom)
     biom.sim = rnorm(n, mean = biom.mean, sd = biom.sd)
+    m.joosten.design <- lm(log(biom)~1+ I(log(dbh))+I(log(dbh)^2)+I(log(age))+I(log(height))+I(log(height)^2)+hsl+I(log(hsl))+I(log(hsl)^2), data = buche.train)
+    predict()
+    
     
     # Muessen die simulierten Biomassedaten nicht zu den Parametern passen? Wie wird das erreicht?
     # Wie bekommen wir Simulierte Parameter zu den simulierten Biomassedaten?
@@ -80,6 +96,25 @@ for(m in 1:4){
   SPSE[m] = SPSE[m]/reps
   SPSE.theo[m] = SPSE.theo[m]/reps
 }
+
+## Schätzung auf Grund von RSS
+m.joosten = lm(log(biom)~1+ I(log(dbh))+I(log(dbh)^2)+I(log(age))+I(log(height))+I(log(height)^2)+hsl+I(log(hsl))+I(log(hsl)^2), data = buche.test)
+
+RSS = sum(residuals(m.joosten)^2)
+
+
+summary(m.joosten)
+sigma2.max = RSS/(cross.length.out-9) # Wie wird sigma2.max berechnet? woher kam bei aufgabe 8 die -19? Number of coefficients in max model?
+
+SPSE1 = RSS + 2*sigma2.max*length(coef(m.joosten))
+
+c(SPSE1 ,SPSE2 ,SPSE3 ,SPSE4)
+
+## Best subset selection
+# 1. maximales Modell festlegen
+# 2. alle Teilmodelle sind Kandidatenmodelle
+# 3. Entscheidung basierend auf Mallow's Cp
+# 4. Schätzer für SPSE = Cp * sigma2.max + n* sigma2.max
 
 ## Schätzung auf Grund von RSS
 m.joosten = lm(log(biom)~1+ I(log(dbh))+I(log(dbh)^2)+I(log(age))+I(log(height))+I(log(height)^2)+hsl+I(log(hsl))+I(log(hsl)^2), data = buche.test)
