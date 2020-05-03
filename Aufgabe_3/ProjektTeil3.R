@@ -13,7 +13,7 @@ buche.data.joosten = subset(buche.data, buche.data[,1] == "Joosten")
 # 1. maximales Modell festlegen
 # 2. alle Teilmodelle sind Kandidatenmodelle
 # 3. Entscheidung basierend auf Mallow's Cp
-# 4. SchÃ¤tzer fuer SPSE = Cp * sigma2.max + n* sigma2.max
+# 4. Schaetzer fuer SPSE = Cp * sigma2.max + n* sigma2.max
 
 ## leaps
 require("leaps")
