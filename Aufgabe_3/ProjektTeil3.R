@@ -6,7 +6,7 @@ head(buche.data)
 # Seed fuer den Random Number Generator
 set.seed(0)
 
-# Aufteilen des Datensatzes in TeildatensÃ¤tze jedes einzelogen Autors
+# Aufteilen des Datensatzes in Teildatensaetze jedes einzelogen Autors
 buche.data.joosten = subset(buche.data, buche.data[,1] == "Joosten")
 
 ## Best subset selection
