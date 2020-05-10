@@ -39,8 +39,8 @@ cross.length.out = numberObs
 # Initialisierung
 SPSE = rep(0,4)
 SPSE.theo = rep(0,4)
-n = 100
-reps = 1
+n = 1000
+reps = 10000 
 
 ## Kreuzalidierung
 index = rep(1:10, length.out = cross.length.out)
@@ -87,13 +87,15 @@ for(m in 1:4){
     
     m.joosten.design = lm(log(biom)~1+ I(log(dbh))+I(log(dbh)^2)+I(log(age))+I(log(height))+I(log(height)^2)+hsl+I(log(hsl))+I(log(hsl)^2), data = buche.design)
     buche.sim.temp = data.frame(age = age.sim, dbh = dbh.sim, height = height.sim, hsl = hsl.sim)
-    biom.sim = predict(m.joosten.design, newdata=buche.sim.temp)
+    biom.sim = exp(predict(m.joosten.design, newdata=buche.sim.temp))
     
     buche.sim = data.frame(hsl = hsl.sim, age = age.sim, dbh = dbh.sim, height = height.sim, biom = biom.sim)
     
-    plot(buche.sim)
-    plot(buche.design)
-    plot(buche.data.used)
+    #(buche.sim)
+    #plot(buche.design)
+    #plot(buche.data.used)
+    #plot(buche.design$biom, ylim=c(0,3000))
+    #plot(buche.sim$biom, ylim=c(0,3000))
     
     # Muessen die simulierten Biomassedaten nicht zu den Parametern passen? Wie wird das erreicht?
     # Wie bekommen wir Simulierte Parameter zu den simulierten Biomassedaten?
