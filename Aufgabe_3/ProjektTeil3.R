@@ -115,46 +115,15 @@ for(m in 1:4){
     ## Prognosefehler
     
     ## Erwarteter SPSE
-    SPSE[m] = SPSE[m] + sum((log(buche.test$biom)-predict(m.joosten, newdata=buche.test))^2)
+    SPSE[m] = SPSE[m] + sum((log(buche.test$biom)-predict(m.joosten, newdata=buche.test))^2)/nrow(buche.test)
     
     ## Theoretischer SPSE
     # SPSE = n*sd^2 + (bias ist NULL, da Zufallszahlen Erwartungstreu) + |M|*sd^2
     numberObs.sim = nrow(buche.design)  # Anzahl der Beobachtungen fuer den gewaehlten Datensatz
-    SPSE.theo[m] = SPSE.theo[m] + n*biom.sd^2 + numberObs.sim*biom.sd^2 
+    #SPSE.theo[m] = SPSE.theo[m] + (n*biom.sd^2 + numberObs.sim*biom.sd^2)/nrow(buche.design) #Biasterm ist Null
     
   }
   SPSE[m] = SPSE[m]/reps
   SPSE.theo[m] = SPSE.theo[m]/reps
 }
-
-## Schaetzung auf Grund von RSS
-#m.joosten = lm(log(biom)~1+ I(log(dbh))+I(log(dbh)^2)+I(log(age))+I(log(height))+I(log(height)^2)+hsl+I(log(hsl))+I(log(hsl)^2), data = buche.test)
-
-#RSS = sum(residuals(m.joosten)^2)
-
-
-#summary(m.joosten)
-#sigma2.max = RSS/(cross.length.out-9) # Wie wird sigma2.max berechnet? woher kam bei aufgabe 8 die -19? Number of coefficients in max model?
-
-#SPSE1 = RSS + 2*sigma2.max*length(coef(m.joosten))
-
-#c(SPSE1 ,SPSE2 ,SPSE3 ,SPSE4)
-
-## Best subset selection
-# 1. maximales Modell festlegen
-# 2. alle Teilmodelle sind Kandidatenmodelle
-# 3. Entscheidung basierend auf Mallow's Cp
-# 4. Schaetzer fuer SPSE = Cp * sigma2.max + n* sigma2.max
-
-## leaps
-#require("leaps")
-
-#buche.bss = regsubsets(log(biom)~1+ I(log(dbh))+I(log(dbh)^2)+I(log(height))+I(log(height)^2)+I(log(age))+hsl, data = buche.data.used, nbest = 3) ## nbest = 3, jeweils die drei besten Modelle gleicher Parameterzahl
-#summary(buche.bss)
-
-
-#summary(buche.bss)$cp
-#par(mar=c(0, 0, 1600, 16))
-#plot(summary(buche.bss)$cp)
-
-#summary(buche.bss)$cp*sigma2.max + cross.length.out* sigma2.max
+SPSE.theo = (n*biom.sd^2 + numberObs.sim*biom.sd^2) #Biasterm ist Null
