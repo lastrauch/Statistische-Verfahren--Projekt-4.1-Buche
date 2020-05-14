@@ -115,7 +115,7 @@ for(m in 1:4){
     ## Prognosefehler
     
     ## Erwarteter SPSE
-    SPSE[m] = SPSE[m] + sum((log(buche.test$biom)-predict(m.joosten, newdata=buche.test))^2)/nrow(buche.test)
+    SPSE[m] = SPSE[m] + sum((log(buche.test$biom)-predict(m.joosten, newdata=buche.test))^2)
     
     ## Theoretischer SPSE
     # SPSE = n*sd^2 + (bias ist NULL, da Zufallszahlen Erwartungstreu) + |M|*sd^2
@@ -124,6 +124,13 @@ for(m in 1:4){
     
   }
   SPSE[m] = SPSE[m]/reps
-  SPSE.theo[m] = SPSE.theo[m]/reps
+  #SPSE.theo[m] = SPSE.theo[m]/reps
 }
-SPSE.theo = (n*biom.sd^2 + numberObs.sim*biom.sd^2) #Biasterm ist Null
+
+biom.var = var(buche.data.joosten$biom)
+SPSE.theo = 116*(biom.var) + 8 * (biom.var) #Biasterm ist Null
+
+for(m in 1:4) {
+  plot(SPSE[m])
+}
+plot(SPSE.theo)
