@@ -127,8 +127,10 @@ for(m in 1:4){
   #SPSE.theo[m] = SPSE.theo[m]/reps
 }
 
-biom.var = var(buche.data.joosten$biom)
-SPSE.theo = 116*(biom.var) + 8 * (biom.var) #Biasterm ist Null
+biom.sd = sd(log(buche.data.joosten$biom))
+plot(biom.sd)
+M = length(coef(m.joosten))
+SPSE.theo = nrow(buche.data.joosten)*(biom.sd^2) + M * (biom.sd^2) #Biasterm ist Null
 
 for(m in 1:4) {
   plot(SPSE[m])
