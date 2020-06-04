@@ -1,5 +1,3 @@
-# Setzen des Working Directory
-# setwd("~/Documents/Master Data Science/Statistische Verfahren/Projekt/Statistische-Verfahren--Projekt-4.1-Buche/Aufgabenstellung")
 # Laden der Daten aus CSV
 buche.data = read.csv("buche.csv", sep=",")
 head(buche.data)
@@ -40,9 +38,7 @@ cross.length.out = numberObs
 SPSE = rep(0,4)
 SPSE.theo = rep(0,4)
 n = 100
-reps = 1 
-
-## Kreuzalidierung
+reps = 100 
 index = rep(1:10, length.out = cross.length.out)
 
 par(mfrow = c(2,4))
@@ -91,48 +87,16 @@ for(m in 1:4){
     
     buche.sim = data.frame(hsl = hsl.sim, age = age.sim, dbh = dbh.sim, height = height.sim, biom = biom.sim)
     
-    #(buche.sim)
-    #plot(buche.design)
-    #plot(buche.data.used)
-    plot(buche.design$biom, ylim=c(0,3000), main = 100 - m*10)
-    plot(buche.sim$biom, ylim=c(0,3000))
-    plot(buche.design$age, ylim=c(0,300))
-    plot(buche.sim$age, ylim=c(0,300))
-    plot(buche.design$height, ylim=c(0,200))
-    plot(buche.sim$height, ylim=c(0,200))
-    plot(buche.design$dbh, ylim=c(0,300))
-    plot(buche.sim$dbh, ylim=c(0,300))
-    
-    
-    # Muessen die simulierten Biomassedaten nicht zu den Parametern passen? Wie wird das erreicht?
-    # Wie bekommen wir Simulierte Parameter zu den simulierten Biomassedaten?
-    # In einer Loesung von vorherigen Studenten wurden einfach zufaellig Daten aus der Designmatrix mit den simulierten Biomassedaten verknuepft. Wieso ist das zielfuehrend?
-    
     ## Parameterschaetzung
-    #TODO: verwenden der Simulationsdaten fuer die Berechunung der Parameter
     m.joosten = lm(log(biom)~1+ I(log(dbh))+I(log(dbh)^2)+I(log(age))+I(log(height))+I(log(height)^2)+hsl+I(log(hsl))+I(log(hsl)^2), data = buche.sim)
-   
-    ## Prognosefehler
     
     ## Erwarteter SPSE
     SPSE[m] = SPSE[m] + sum(log((buche.test$biom-predict(m.joosten, newdata=buche.test))^2))
-    
-    ## Theoretischer SPSE
-    # SPSE = n*sd^2 + (bias ist NULL, da Zufallszahlen Erwartungstreu) + |M|*sd^2
-    numberObs.sim = nrow(buche.design)  # Anzahl der Beobachtungen fuer den gewaehlten Datensatz
-    #SPSE.theo[m] = SPSE.theo[m] + (n*biom.sd^2 + numberObs.sim*biom.sd^2)/nrow(buche.design) #Biasterm ist Null
-    
   }
   SPSE[m] = SPSE[m]/reps
-  #SPSE.theo[m] = SPSE.theo[m]/reps
 }
 
 biom.sd = sd(log(buche.data.joosten$biom))
-plot(biom.sd)
 M = length(coef(m.joosten))
 SPSE.theo = nrow(buche.data.joosten)*(biom.sd^2) + M * (biom.sd^2) #Biasterm ist Null
 
-for(m in 1:4) {
-  plot(SPSE[m])
-}
-plot(SPSE.theo)
