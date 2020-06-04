@@ -115,7 +115,7 @@ for(m in 1:4){
     ## Prognosefehler
     
     ## Erwarteter SPSE
-    SPSE[m] = SPSE[m] + sum((log(buche.test$biom)-predict(m.joosten, newdata=buche.test))^2)
+    SPSE[m] = SPSE[m] + sum(log((buche.test$biom-predict(m.joosten, newdata=buche.test))^2))
     
     ## Theoretischer SPSE
     # SPSE = n*sd^2 + (bias ist NULL, da Zufallszahlen Erwartungstreu) + |M|*sd^2
