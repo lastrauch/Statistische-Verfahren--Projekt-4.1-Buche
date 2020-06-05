@@ -37,7 +37,7 @@ cross.length.out = numberObs
 # Initialisierung
 SPSE = rep(0,4)
 SPSE.theo = rep(0,4)
-n = 1000
+n = 100
 reps = 100 
 index = rep(1:10, length.out = cross.length.out)
 
@@ -98,10 +98,10 @@ for(m in 1:4){
 
 biom.sd = sd(log(buche.data.joosten$biom))
 M = length(coef(m.joosten))
-SPSE.theo = nrow(buche.data.joosten)*(biom.sd^2) + M * (biom.sd^2) #Biasterm ist Null 100% Testdatenrate
+SPSE.theo = nrow(buche.data.joosten)*(biom.sd^2) + M * (biom.sd^2) #Biasterm ist Null; 100% Testdatenrate
 
-SPSE.theo10 = 0.10*nrow(buche.data.joosten)*(biom.sd^2) + M * (biom.sd^2) #Biasterm ist Null 10% Testdatenrate
-SPSE.theo20 = 0.20*nrow(buche.data.joosten)*(biom.sd^2) + M * (biom.sd^2) #Biasterm ist Null 20% Testdatenrate
-SPSE.theo30 = 0.30*nrow(buche.data.joosten)*(biom.sd^2) + M * (biom.sd^2) #Biasterm ist Null 30% Testdatenrate
-SPSE.theo40 = 0.40*nrow(buche.data.joosten)*(biom.sd^2) + M * (biom.sd^2) #Biasterm ist Null 40% Testdatenrate
+SPSE.theo10 = 0.10*nrow(buche.data.joosten)*(biom.sd^2) + M * (biom.sd^2) #Biasterm ist Null; 10% Testdatenrate
+SPSE.theo20 = 0.20*nrow(buche.data.joosten)*(biom.sd^2) + M * (biom.sd^2) #Biasterm ist Null; 20% Testdatenrate
+SPSE.theo30 = 0.30*nrow(buche.data.joosten)*(biom.sd^2) + M * (biom.sd^2) #Biasterm ist Null; 30% Testdatenrate
+SPSE.theo40 = 0.40*nrow(buche.data.joosten)*(biom.sd^2) + M * (biom.sd^2) #Biasterm ist Null; 40% Testdatenrate
 
